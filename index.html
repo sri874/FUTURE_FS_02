@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sri</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background-color: #b39898;
+    }
+
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      background: #7c6f6f;
+      color: rgb(10, 9, 9);
+      padding: 1rem;
+    }
+
+    .navbar ul {
+      display: flex;
+      list-style: none;
+      gap: 1rem;
+      margin: 0;
+      padding: 0;
+    }
+
+    .navbar a {
+      color: rgb(3, 0, 2);
+      text-decoration: none;
+    }
+
+    .filter-buttons,
+    .search-bar {
+      text-align: center;
+      margin: 20px 0;
+    }
+
+    .filter-buttons button,
+    .search-bar input {
+      margin: 0 10px;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+    }
+
+    .products {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .product {
+      background: white;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 0 8px rgba(0,0,0,0.1);
+      width: 220px;
+      text-align: center;
+    }
+
+    .product img {
+      transition: transform 0.3s ease;
+      border-radius: 4px;
+      width: 100%;
+      height: auto;
+    }
+
+    .product img:hover {
+      transform: scale(1.05);
+    }
+
+    button {
+      margin-top: 10px;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+
+    #cart-section {
+      display: none;
+      padding: 20px;
+      background: #fff;
+      max-width: 600px;
+      margin: auto;
+    }
+
+    #cart-list div {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    #cart-list img {
+      width: 40px;
+      height: 40px;
+      margin-right: 10px;
+      border-radius: 4px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 8px;
+      margin: 5px 0;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <h2>Sri chan's Ecommerce</h2>
+    <ul>
+      <li><a href="#">Home</a></li>
+      <li><a href="#">Products</a></li>
+      <li><a href="#" onclick="showCart()">Cart <span id="cart-count">(0)</span></a></li>
+    </ul>
+  </nav>
+
+  <section class="search-bar">
+    <input type="text" id="search-bar" placeholder="Search products..." oninput="searchProducts()">
+  </section>
+
+  <section class="filter-buttons">
+    <button onclick="filterProducts('All')">All</button>
+    <button onclick="filterProducts('Shoes')">Shoes</button>
+    <button onclick="filterProducts('Electronics')">Electronics</button>
+    <button onclick="filterProducts('Accessories')">Accessories</button>
+  </section>
+
+  <section class="products">
+    <div class="product" data-category="Shoes">
+      <img src="image/nike.jpg" alt="Nike Sneakers">
+      <h3>Nike Sneakers</h3>
+      <p>$65</p>
+      <button onclick="addToCart(65, 'Nike Sneakers', 'image/nike.jpg')">Add to Cart</button>
+    </div>
+
+    <div class="product" data-category="Electronics">
+      <img src="image/earbuds.jpg" alt="Wireless Earbuds">
+      <h3>Wireless Earbuds</h3>
+      <p>$40</p>
+      <button onclick="addToCart(40, 'Wireless Earbuds', 'image/earbuds.jpg')">Add to Cart</button>
+    </div>
+
+    <div class="product" data-category="Accessories">
+      <img src="image/cap.jpg" alt="Stylish Cap">
+      <h3>Stylish Cap</h3>
+      <p>$25</p>
+      <button onclick="addToCart(25, 'Stylish Cap', 'image/cap.jpg')">Add to Cart</button>
+    </div>
+
+    <div class="product" data-category="Shoes">
+      <img src="image/sports.jpg" alt="Running Shoes">
+      <h3>Running Shoes</h3>
+      <p>$80</p>
+      <button onclick="addToCart(80, 'Running Shoes', 'image/sports.jpg')">Add to Cart</button>
+    </div>
+
+    <div class="product" data-category="Shoes">
+      <img src="image/shoe.jpg" alt="Casual Sneakers">
+      <h3>Casual Sneakers</h3>
+      <p>$70</p>
+      <button onclick="addToCart(70, 'Casual Sneakers', 'image/shoe.jpg')">Add to Cart</button>
+    </div>
+
+    <div class="product" data-category="Electronics">
+      <img src="image/phone.jpg" alt="Smartphone">
+      <h3>Smartphone</h3>
+      <p>$299</p>
+      <button onclick="addToCart(299, 'Smartphone', 'image/phone.jpg')">Add to Cart</button>
+    </div>
+  </section>
+
+  <section id="cart-section">
+    <h3>Your Cart</h3>
+    <div id="cart-list"></div>
+    <p id="cart-total"></p>
+    <button onclick="clearCart()">Clear Cart</button>
+
+    <h4>Checkout</h4>
+    <input type="text" id="checkout-name" placeholder="Name">
+    <input type="text" id="checkout-address" placeholder="Address">
+    <select id="checkout-method">
+      <option value="Cash on Delivery">Cash on Delivery</option>
+      <option value="Credit Card">Credit Card</option>
+    </select>
+    <button onclick="checkout()">Confirm Order</button>
+  </section>
+
+  <script>
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+    function updateCartCounter() {
+      document.getElementById('cart-count').textContent = `(${cart.length})`;
+    }
+
+    function addToCart(price, name, img) {
+      cart.push({ name, price, img });
+      localStorage.setItem('cart', JSON.stringify(cart));
+      updateCartCounter();
+      alert(`${name} added to cart!`);
+    }
+
+    function showCart() {
+      const cartList = document.getElementById('cart-list');
+      const total = cart.reduce((sum, item) => sum + item.price, 0);
+      cartList.innerHTML = '';
+      cart.forEach(item => {
+        const div = document.createElement('div');
+        div.innerHTML = `<img src="${item.img}" alt="${item.name}"><span>${item.name} - $${item.price}</span>`;
+        cartList.appendChild(div);
+      });
+      document.getElementById('cart-total').textContent = `Total: $${total}`;
+      document.getElementById('cart-section').style.display = 'block';
+    }
+
+    function clearCart() {
+      cart = [];
+      localStorage.removeItem('cart');
+      updateCartCounter();
+      document.getElementById('cart-list').innerHTML = '';
+      document.getElementById('cart-total').textContent = '';
+      alert('Cart cleared!');
+    }
+
+    function checkout() {
+      const name = document.getElementById('checkout-name').value;
+      const address = document.getElementById('checkout-address').value;
+      const method = document.getElementById('checkout-method').value;
+      if (name && address) {
+        alert(`Thanks, ${name}! Your order will be shipped to ${address} and paid via ${method}.`);
+        clearCart();
+      } else {
+        alert('Please fill out all checkout fields.');
+      }
+    }
+
+    function filterProducts(category) {
+      document.querySelectorAll('.product').forEach(product => {
+        product.style.display = category === 'All' || product.dataset.category === category ? 'block' : 'none';
+      });
+    }
+
+    function searchProducts() {
+      const query = document.getElementById('search-bar').value.toLowerCase();
+      document.querySelectorAll('.product').forEach(product => {
+        const name = product.querySelector('h3').textContent.toLowerCase();
+        product.style.display = name.includes(query) ? 'block' : 'none';
+      });
+    }
+
+    window.onload = updateCartCounter;
+  </script>
+</body>
+</html>
